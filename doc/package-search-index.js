@@ -1,1 +1,0 @@
-packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"m":"PoductManagement","l":"labs.pm.data"}];updateSearchResults();

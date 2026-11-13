@@ -1,39 +1,99 @@
+/*
+ * Copyright (c) 2026. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+ * Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
+ * Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
+ * Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
+ * Vestibulum commodo. Ut rhoncus gravida arcu.
+ */
+
 package labs.pm.data;
 
 import java.math.BigDecimal;
+import java.text.MessageFormat;
+import java.text.NumberFormat;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
+/**
+ * @author manana
+ **/
 public class ProductManager {
-	
-	private Product product;
-	private Review review;
-	
-	public Product createProduct (int id, String name, BigDecimal price, Rating rating, LocalDate bestBefore) {
-		product = new Food(id, name, price, rating, bestBefore);
-		return product;
-	}
-	
-	public Product createProduct(int id, String name, BigDecimal price, Rating rating) {
-		product = new Drink(id, name, price, rating);
-		return product;
-	}
-	
-	public Product reviewProduct (Product product, Rating rating, String comments) {
-		review = new Review( rating, comments);
-		this.product = product.applayRating(rating);
-		return this.product;
-	}
+    private Product product;
+    private Review review;
+    private Locale locale;
+    private ResourceBundle resources;
+    private DateTimeFormatter dateFormart;
+    private NumberFormat moneyFormat;
 
-	public void printProductReport ( ) {
-		StringBuilder txt = new StringBuilder();
-		txt.append(product);
-		txt.append('\n');
-		if (review != null) {
-			txt.append(review);
-		} else {
-			txt.append("Not reviewed");
-		}
-		txt.append('\n');
-		System.out.println(txt);
-	}
+
+
+    public ProductManager (Locale locale){
+        this.locale= locale;
+        resources = ResourceBundle.getBundle("labs.pm.data.resources", locale);
+        dateFormart = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)
+                .localizedBy(locale);
+
+        moneyFormat = NumberFormat.getCurrencyInstance(locale);
+    }
+
+    public Product createProduct (int id, String name, BigDecimal price,
+                                Rating rating, LocalDate bestBefore){
+        product =  new Food(id, name, price,rating,bestBefore);
+        return product;
+    }
+
+    public Product createProduct (int id, String name, BigDecimal price,
+                                  Rating rating){
+        product =  new Drink (id, name, price,rating);
+        return product;
+    }
+
+    public Product reviewProduct (Product product, Rating rating, String comments){
+        review = new Review(rating, comments);
+        this.product = product.applyRating(rating);
+        return  this.product;
+    }
+
+    public void printProductReport () {
+        StringBuilder txt = new StringBuilder();
+
+        String type = switch(product){
+            case Food food -> resources.getString("food");
+            case Drink drink -> resources.getString("drink");
+        };
+
+        // remaing method logic
+
+        txt.append(MessageFormat.format(resources.getString("product"),
+                product.getName(),
+                moneyFormat.format(product.getPrice()),
+                product.getRating().getStars(),
+                dateFormart.format(product.getBestBefore()),
+                type));
+
+        if (review != null){
+            txt.append(MessageFormat.format(resources.getString("review"),
+                    review.rating().getStars(),
+                    review.comments()));
+        } else {
+            txt.append(resources.getString("no.reviews"));
+        }
+
+      /*  txt.append(product);
+        txt.append('\n');
+        if (review != null){
+            txt.append(review);
+        }else{
+            txt.append("Not reviewed");
+        }
+        txt.append('\n');
+
+*/
+        System.out.println(txt);
+    }
+
+
 }
