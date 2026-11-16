@@ -69,7 +69,12 @@ public class Shop {
 
 
         pm.printProductReport();
-        p1 = pm.reviewProduct(p1, Rating.FOUR_STAR, "Ta bueno ");
+        p1 = pm.reviewProduct(p1, Rating.ONE_STAR, "le falta un poco");
+        p1 = pm.reviewProduct(p1, Rating.TWO_STAR, "Ta bueno ");
+        p1 = pm.reviewProduct(p1, Rating.FOUR_STAR, "Muy bueno");
+        p1 = pm.reviewProduct(p1, Rating.FIVE_STAR, "Increible");
+        p1 = pm.reviewProduct(p1, Rating.FOUR_STAR, "Muy rico");
+        p1 = pm.reviewProduct(p1, Rating.THREE_STAR, "Se esta bien");
         pm.printProductReport();
 
 
