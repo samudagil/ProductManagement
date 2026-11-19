@@ -12,25 +12,27 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.Objects;
 
-/**
-* {@code Product} class represents properties and behaviors of
-* product objects in the Product Management System.
-* <br>
-* Each product has an id, name, and price
-* <br>
-* Each product can have a discount, calculated based on a
-* {@link DISCOUNT_RATE discount rate}
-* @version 4.0
-* @author oracle
-*/
+import static java.math.RoundingMode.HALF_UP;
 
-public sealed abstract class Product implements Rateable <Product> permits Food, Drink {
+/**
+ * {@code Product} class represents properties and behaviors of
+ * product objects in the Product Management System.
+ * <br>
+ * Each product has an id, name, and price
+ * <br>
+ * Each product can have a discount, calculated based on a
+ * {@link DISCOUNT_RATE discount rate}
+ * @version 4.0
+ * @author oracle
+ **/
+public sealed abstract class Product implements Rateable <Product>permits Food, Drink{
 
     private int id;
     private String name;
     private BigDecimal price;
-    private Rating rating = Rating.NOT_RATED;
-
+    private Rating rating;
+//    public static int a = 0;
+//    public  int a2 = 0;
     /**
      * A constant that defines a
      * {@link java.math.BigDecimal BigDecimal} value of the discount rate
@@ -39,13 +41,11 @@ public sealed abstract class Product implements Rateable <Product> permits Food,
      */
     public static final BigDecimal DISCOUNT_RATE = BigDecimal.valueOf(0.1);
 
-
-
-    Product () {
-        this(0, "", BigDecimal.ZERO);
+     Product() {
+        this(0, "no name", BigDecimal.valueOf(0), Rating.NOT_RATED);
     }
 
-     Product (int id, String name, BigDecimal price, Rating rating) {
+     Product(int id, String name, BigDecimal price, Rating rating) {
         super();
         this.id = id;
         this.name = name;
@@ -53,33 +53,8 @@ public sealed abstract class Product implements Rateable <Product> permits Food,
         this.rating = rating;
     }
 
-    Product (int id, String name, BigDecimal price) {
-        this(id, name, price, Rating.NOT_RATED);
-    }
-
-    //public  abstract Product applyRating (Rating newRating) ;
-
-    /**
-     * Assumes tha the best before date is today
-     * @return the current date
-     */
-
-    public LocalDate getBestBefore() {
-        return LocalDate.now();
-    }
-
-    /**
-     * Calculates discount based on a product price and
-     * {@link DISCOUNT_RATE discount rate}
-     * @return a {@link java.math.BigDecimal BigDecimal}
-     * value of the discount
-    */
-    public BigDecimal getDiscount () {
-        return price.multiply(DISCOUNT_RATE).setScale(2, RoundingMode.HALF_UP);
-    }
-
-    public String getName() {
-        return name;
+    Product(int id, String name, BigDecimal price) {
+        this(id,name,price, Rating.NOT_RATED);
     }
 
     public BigDecimal getPrice() {
@@ -90,17 +65,45 @@ public sealed abstract class Product implements Rateable <Product> permits Food,
         return id;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Calculates discount based on a product price and
+     * {@link DISCOUNT_RATE discount rate}
+     * @return a {@link java.math.BigDecimal BigDecimal}
+     * value of the discount
+     */
+
+    public BigDecimal getDiscountRate(){
+        return price.multiply(DISCOUNT_RATE).setScale(2, HALF_UP);
+    }
+
+    public Rating getRating() {
+        return rating;
+    }
+
     @Override
     public String toString() {
-        return id+", "+name+", "+price+", "+getDiscount()+", "+rating.getStars()+" "+getBestBefore();
+        return id + ", " + name + ", " + price + ", " + getDiscountRate() + ", " + rating.getStars() + ", " + getBestBefore();
+    }
+
+    public abstract Product applyRating(Rating newRating);
+
+    /**
+     * Assumes that the bestBefore day is today
+     * @return the current date
+     */
+    public LocalDate getBestBefore() {
+        return LocalDate.now();
     }
 
     @Override
     public boolean equals(Object o) {
-
-        if (this == o ) return true;
-        if (o instanceof  Product product){
-            return id == product.id && Objects.equals(name, product.name);
+        if(this == o) return true;
+        if (o instanceof Product product){
+            return id == product.id;
         }
         return false;
     }
@@ -110,9 +113,7 @@ public sealed abstract class Product implements Rateable <Product> permits Food,
         return Objects.hashCode(id);
     }
 
-    public Rating getRating() {
-        return rating;
+    protected void m(){
+
     }
-
-
 }
